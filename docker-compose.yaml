@@ -1,0 +1,17 @@
+services:
+  db:
+    image: mariadb:13.0
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - ${DB_PORT}:3306
+    volumes:
+      - db_data:/var/lib/mysql
+    env_file:
+      - .env
+volumes:
+  db_data:
+  wordpress:
