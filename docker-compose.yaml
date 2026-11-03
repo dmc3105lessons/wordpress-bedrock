@@ -12,6 +12,41 @@ services:
       - db_data:/var/lib/mysql
     env_file:
       - .env
+    networks:
+      - mybridge
+    
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080" # Порт, по которому будет доступна админка
+    depends_on:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db # Автоматически подставляет имя сервиса БД
+    networks:
+      - mybridge
+      
+  wpcli:
+    image: wordpress:cli
+    user: "33" # Запуск от имени www-data (UID 33), чтобы избежать проблем с правами
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html
+    network_mode: host
+    working_dir: /var/www/html/web
+    environment:
+      WORDPRESS_DB_HOST: localhost:3307
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+    command: tail -f /dev/null
+
+
 volumes:
   db_data:
-  wordpress:
+
+networks:
+  mybridge:
+    driver: bridge
